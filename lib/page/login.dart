@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class Login extends StatefulWidget {
   const Login({super.key});
 
@@ -19,15 +21,17 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> fetchCsrf() async {
-    const url = 'http://172.30.1.70:8000/api-auth/login/';
+    String url = '${dotenv.get('DEV_URL')}/api-auth/login/';
     try {
       final response = await http.get(Uri.parse(url));
       final cookieHeader = response.headers['set-cookie'];
       final cookie = cookieHeader?.split(';').first;
+      print(response.body);
       if (cookie != null) {
         final parts = cookie.split('=');
         if (parts.length == 2) {
           _csrfToken = parts[1];
+          print(_csrfToken);
         }
       }
     } catch (error) {
